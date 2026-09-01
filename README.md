@@ -1,0 +1,2 @@
+# Token-Bleed-Scorecard
+Free 3-minute diagnostic for AI agents. Answer 15 questions, get your score, see your leak.
