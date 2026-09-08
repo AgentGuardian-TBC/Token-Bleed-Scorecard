@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Waste Scorecard</title>
+<style>
+:root{--bg:#0e1116;--card:#171b22;--ink:#f3f1ea;--muted:#b7b3a8;--line:#2a303a;--accent:#e8c36a;--accent-ink:#1a1406;--bad:#d97a6c;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:Georgia,serif;background:var(--bg);color:var(--ink);line-height:1.5;}
+.container{max-width:720px;margin:0 auto;padding:20px;}
+header{padding:40px 0 20px;}
+.eyebrow{font-family:system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--accent);margin:0 0 12px;}
+h1{font-size:34px;line-height:1.15;margin:0 0 14px;}
+h2{font-size:24px;margin:20px 0 10px;}
+p{color:var(--muted);}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;padding:14px 22px;font-size:16px;cursor:pointer;border-radius:4px;}
+.card{background:var(--card);border:1px solid var(--line);padding:22px;margin:18px 0;border-radius:8px;}
+.bullets{padding-left:18px;}
+.bullets li{margin:8px 0;color:var(--muted);}
+.scale{display:flex;gap:8px;flex-wrap:wrap;}
+.scale label{font-family:system-ui,sans-serif;font-size:13px;border:1px solid var(--line);padding:8px 10px;border-radius:4px;cursor:pointer;}
+input[type=email]{width:100%;padding:12px;border-radius:4px;border:1px solid var(--line);background:#10141a;color:var(--ink);font-size:16px;}
+.score{font-size:56px;margin:8px 0;color:var(--accent);font-weight:700;}
+.hidden{display:none;}
+footer{padding:40px 0;font-family:system-ui,sans-serif;font-size:12px;color:#7d7a72;border-top:1px solid var(--line);margin-top:40px;}
+.cat{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:8px 0;font-size:15px;}
+.cat.weak{color:var(--bad);}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<p class="eyebrow">Agent Guardian - Free 3-minute diagnostic</p>
+<h1>Your agents are not expensive. Your leaks are.</h1>
+<p>Answer 15 questions. See which pipe is open and get the first fix.</p>
+</header>
+<main id="land">
+<button class="btn" onclick="startQuiz()">Find my leak</button>
+<p>No credit card. About 3 minutes. You get a score and a next step.</p>
+<div class="card">
+<ul class="bullets">
+<li>Built for people running agents</li>
+<li>Names the leak. No lectures.</li>
+<li>Pairs with Agent Guardian when ready</li>
+</ul>
+</div>
+</main>
+<main id="quiz" class="hidden">
+<p id="progress"></p>
+<p id="question"></p>
+<div class="scale" id="scale"></div>
+<button class="btn" onclick="nextQuestion()">Next</button>
+</main>
+<main id="gate" class="hidden">
+<h2>Your score is ready</h2>
+<input id="email" type="email" placeholder="Enter email">
+<button class="btn" onclick="showResults()" style="margin-top:12px;">Show my leak</button>
+</main>
+<main id="results" class="hidden">
+<div class="score" id="score"></div>
+<p id="weakLine"></p>
+<div class="card" id="cats"></div>
+<div class="card" id="weakCopy"></div>
+<h2>Ready for the lock?</h2>
+<a class="btn" href="https://agentguardian.dev">Join the list</a>
+</main>
+<footer>Agent Guardian - Token Waste Scorecard</footer>
+</div>
+<script>
+var QUESTIONS=[['Visibility','I can tell this week how many dollars I spent on AI tokens by project.'],['Visibility','I know which model or agent is responsible for most spending.'],['Visibility','I have a simple number I check instead of surprises.'],['Caps','Every key has a hard spend or token limit.'],['Caps','Looping agents or fat prompts hit a wall, not my card.'],['Caps','I can kill a runaway job in under two minutes.'],['Routing','I use cheap/fast by default and escalate when needed.'],['Routing','I have a rule for what good enough means.'],['Routing','I cache answers instead of paying full price every time.'],['Agent waste','My agents have max steps, tool calls, or retries.'],['Agent waste','I strip context before sending a job.'],['Agent waste','I batch work instead of starting fresh threads.'],['Habits','I treat AI spend like a budget line.'],['Habits','Before a long run, I estimate what it costs.'],['Habits','When it costs more, I look at why first.']];
+var COPY={'Visibility':'You cannot manage a bill you cannot see. First fix: pick one number you check weekly.','Caps':'You have access but no brakes. First fix: hard spend limit on every key.','Routing':'You pay high prices for easy work. First fix: list tasks that need expensive models.','Agent waste':'Extra steps beat high prices. First fix: set max steps and strip context.','Habits':'Tokens feel free until they are not. First fix: estimate before you run.'};
+var answers=[];var currentQ=0;
+function startQuiz(){document.getElementById('land').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');renderQ();}
+function renderQ(){var q=QUESTIONS[currentQ];document.getElementById('progress').textContent='Question ' + (currentQ + 1) + ' of 15 - ' + q[0];document.getElementById('question').textContent=q[1];var scale=document.getElementById('scale');scale.innerHTML='';for(var i=1;i<=5;i++){var l=document.createElement('label');l.innerHTML='<input type="radio" name="ans" value="' + i + '"> ' + i;scale.appendChild(l);}}
+function nextQuestion(){var p=document.querySelector('input[name="ans"]:checked');if(!p){alert('Pick 1 to 5');return;}answers[currentQ]=parseInt(p.value);if(currentQ<14){currentQ++;renderQ();}else{document.getElementById('quiz').classList.add('hidden');document.getElementById('gate').classList.remove('hidden');}}
+function showResults(){var e=document.getElementById('email').value.trim();if(!e||e.indexOf('@')<0){alert('Need email');return;}var avg=function(arr){var sum=0;for(var i=0;i<arr.length;i++)sum+=arr[i];return sum/arr.length;};var cats={'Visibility':answers.slice(0,3),'Caps':answers.slice(3,6),'Routing':answers.slice(6,9),'Agent waste':answers.slice(9,12),'Habits':answers.slice(12,15)};var scores={};for(var k in cats){scores[k]=avg(cats[k]);}var overall=avg(answers);var weakest='Caps';for(var k in scores){if(scores[k]<scores[weakest])weakest=k;}document.getElementById('gate').classList.add('hidden');document.getElementById('results').classList.remove('hidden');document.getElementById('score').textContent=overall.toFixed(1) + ' / 5';document.getElementById('weakLine').textContent='Weakest: ' + weakest + '. Fix that first.';var catsHtml='';for(var k in scores){var cls=k===weakest?'weak':'';catsHtml+='<div class="cat ' + cls + '"><span>' + k + '</span><span>' + scores[k].toFixed(1) + '</span></div>';}document.getElementById('cats').innerHTML=catsHtml;document.getElementById('weakCopy').innerHTML='<h2>' + weakest + '</h2><p>' + COPY[weakest] + '</p>';}
+</script>
+</body>
+</html>
